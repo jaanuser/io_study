@@ -8,6 +8,7 @@ public class Client {
     private static Socket socket;
     private static final String DEFAULT_IP = "127.0.0.1";
     private static final int DEFAULT_PORT = 8888;
+    private static final String QUIT_MARK = "quit";
 
     public static void main(String[] args) {
         try {
@@ -30,13 +31,12 @@ public class Client {
                 //一开始没写\n,那边readline 读不到
                 bufferedWriter.write(msg + "\n");
                 bufferedWriter.flush();
-                if ("quit".equals(msg)) {
+                System.out.println("向客户端发送" + msg);
+                //读取服务端发来信息
+                String read = bufferedReader.readLine();
+                System.out.println(read);
+                if (QUIT_MARK.equals(msg)) {
                     break;
-                }else {
-                    System.out.println("向客户端发送" + msg);
-                    //读取服务端发来信息
-                    String read = bufferedReader.readLine();
-                    System.out.println(read);
                 }
             }
 
