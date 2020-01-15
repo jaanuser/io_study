@@ -22,17 +22,23 @@ public class Server {
                         new InputStreamReader(socket.getInputStream()));
                 BufferedWriter bufferedWriter = new BufferedWriter(
                         new OutputStreamWriter(socket.getOutputStream()));
-                //读取客户端的消息
-                System.out.println("等待读取客户端消息");
-                String msg = bufferedReader.readLine();
-                System.out.println("读取" + socket.getPort() + msg);
-                if("quit".equals(msg)){
-                    System.out.println(socket.getPort()+"推出");
+
+                while(true){
+
+                    //读取客户端的消息
+                    System.out.println("等待读取客户端消息");
+                    String msg = bufferedReader.readLine();
+                    System.out.println("读取" + socket.getPort()+":" + msg);
+                    //回复客户端的消息
+                    bufferedWriter.write("回复:" + socket.getPort() + msg+"\n");
+                    System.out.println("log回复:" + socket.getPort());
+                    bufferedWriter.flush();
+                    if("quit".equals(msg)){
+                        System.out.println(socket.getPort()+"退出");
+                        break;
+                    }
+
                 }
-                //回复客户端的消息
-                bufferedWriter.write("回复:" + socket.getPort() + msg);
-                System.out.println("log回复:" + socket);
-                bufferedWriter.flush();
                 bufferedReader.close();
                 bufferedWriter.close();
             }
