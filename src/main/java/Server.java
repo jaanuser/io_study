@@ -26,6 +26,9 @@ public class Server {
                 System.out.println("等待读取客户端消息");
                 String msg = bufferedReader.readLine();
                 System.out.println("读取" + socket.getPort() + msg);
+                if("quit".equals(msg)){
+                    System.out.println(socket.getPort()+"推出");
+                }
                 //回复客户端的消息
                 bufferedWriter.write("回复:" + socket.getPort() + msg);
                 System.out.println("log回复:" + socket);

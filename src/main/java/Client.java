@@ -22,17 +22,23 @@ public class Client {
             //本地输入
             BufferedReader reader = new BufferedReader(
                     new InputStreamReader(System.in));
-            System.out.println("请输入向服务端发送的内容\n");
+            while (true) {
+                System.out.println("请输入向服务端发送的内容\n");
 
-            String msg = reader.readLine();
-            //向服务端写入
-            //一开始没写\n,那边readline 读不到
-            bufferedWriter.write(msg+"\n");
-            bufferedWriter.flush();
-            System.out.println("向客户端发送" + msg);
-            //读取服务端发来信息
-            String read = bufferedReader.readLine();
-            System.out.println(read);
+                String msg = reader.readLine();
+                //向服务端写入
+                //一开始没写\n,那边readline 读不到
+                bufferedWriter.write(msg + "\n");
+                bufferedWriter.flush();
+                if ("quit".equals(msg)) {
+                    break;
+                }else {
+                    System.out.println("向客户端发送" + msg);
+                    //读取服务端发来信息
+                    String read = bufferedReader.readLine();
+                    System.out.println(read);
+                }
+            }
 
             reader.close();
             bufferedWriter.flush();
