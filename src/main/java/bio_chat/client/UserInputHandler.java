@@ -6,30 +6,27 @@ import java.net.Socket;
 public class UserInputHandler implements Runnable {
 
     //客户端
-    ChatClient chatClient;
-    private Socket socket;
+    private ChatClient chatClient;
 
     public UserInputHandler(ChatClient chatClient) {
         this.chatClient = chatClient;
-        socket = chatClient.socket;
     }
 
-    public void start() {
-        BufferedWriter writer = null;
+
+    @Override
+    public void run() {
         BufferedReader reader = null;
         try {
-            //获取本地输入和客户端soket输出
-            writer = new BufferedWriter(
-                    new OutputStreamWriter(socket.getOutputStream()));
+            //获取本地输入
             reader = new BufferedReader(
                     new InputStreamReader(System.in));
             //循坏等待用户输入
             while (true) {
                 String msg = reader.readLine();
-                writer.write(msg + '\n');
-                writer.flush();
+
+                chatClient.send(msg);
                 //判断是否退出
-                if (chatClient.QUIT.equals(msg)) {
+                if (chatClient.readToQuit(msg)) {
                     break;
                 }
 
@@ -38,17 +35,11 @@ public class UserInputHandler implements Runnable {
             e.printStackTrace();
         } finally {
             try {
-                writer.close();
                 reader.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-    }
 
-
-    @Override
-    public void run() {
-        start();
     }
 }
