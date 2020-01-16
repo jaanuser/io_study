@@ -1,3 +1,5 @@
+package soket_study;
+
 import org.omg.CORBA.INTERNAL;
 
 import java.io.*;
