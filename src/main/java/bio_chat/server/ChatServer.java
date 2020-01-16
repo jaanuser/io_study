@@ -8,6 +8,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ChatServer {
     //端口常量
@@ -15,9 +18,11 @@ public class ChatServer {
     private final String QUIT = "quit";
     private ServerSocket serverSocket;
     private Map<Integer, Writer> clientMap;
+    private ExecutorService executorService;
 
     public ChatServer() {
         this.clientMap = new HashMap<>();
+        executorService = Executors.newFixedThreadPool(10);
     }
 
     //开启服务
@@ -32,8 +37,8 @@ public class ChatServer {
                 System.out.println(socket.getPort() + "已连接");
 
 
-                //开启一个ServerHandler线程服务该socket
-                new Thread(new ChatHandler(this, socket)).start();
+                //将当前任务交给线程池
+                executorService.execute(new ChatHandler(this, socket));
             }
         } catch (IOException e) {
             e.printStackTrace();
