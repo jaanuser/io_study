@@ -14,12 +14,13 @@ public class ChatServer {
     private  ByteBuffer wBuffer;
     private  final int BUFFER_SIZE = 1024;
     private  final String QUIT = "qiut";
+    private ServerSocketChannel server = null;
 
     public void star() {
         try {
 
             //启动服务器
-            ServerSocketChannel server = ServerSocketChannel.open();
+            server = ServerSocketChannel.open();
             //默认是阻塞式的调用
             server.configureBlocking(false);
             server.socket().bind(new InetSocketAddress(PORT));
@@ -54,10 +55,9 @@ public class ChatServer {
     // 处理请求
     private void handles(SelectionKey key) throws IOException {
 
-        ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key.channel();
         // 处理ACCEPT事件
         if (key.isAcceptable()) {
-            SocketChannel socketChannel = serverSocketChannel.accept();
+            SocketChannel socketChannel = server.accept();
             //默认为阻塞式的
             socketChannel.configureBlocking(false);
             socketChannel.register(key.selector(), SelectionKey.OP_READ);
@@ -98,19 +98,19 @@ public class ChatServer {
     }
 
     // 转发消息
-    private void forwardMsg(SocketChannel channel, SelectionKey key, String msg) throws IOException {
+    private void forwardMsg(SocketChannel client, SelectionKey key, String msg) throws IOException {
         // 只要注册的key都显示
         Set<SelectionKey> keys = key.selector().keys();
         for (SelectionKey selectionKey : keys) {
-            SocketChannel socketChannel = (SocketChannel) selectionKey.channel();
+            Channel channel = (Channel) selectionKey.channel();
             if (selectionKey.channel() instanceof ServerSocketChannel) continue;
             //判断selector是否正常
-            if (key.isValid() && selectionKey.channel().equals(channel)) {
+            if (key.isValid() && selectionKey.channel().equals(client)) {
                 wBuffer.clear();
                 wBuffer.put(msg.getBytes());
                 wBuffer.flip();
                 while (wBuffer.hasRemaining()) {
-                    socketChannel.write(wBuffer);
+                    ((SocketChannel)channel).write(wBuffer);
                 }
             }
         }

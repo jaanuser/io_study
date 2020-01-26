@@ -52,7 +52,7 @@ public class ChatClient {
         SocketChannel socketChannel = (SocketChannel) key.channel();
         if (key.isConnectable()) {
             //如果返回true就说明连接就绪,可以停止连接这个动作了,false的话说明还没有连接,需要等待
-            if (socketChannel.isConnected()) {
+            if (socketChannel.isConnectionPending()) {
                 socketChannel.finishConnect();
 
                 //处理用户输入
