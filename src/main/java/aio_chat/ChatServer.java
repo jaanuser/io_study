@@ -35,11 +35,6 @@ public class ChatServer {
             System.out.println("有新的连接");
             if (serverChannel.isOpen()) {
                 serverChannel.accept(null, new AcceptHandler());
-                try {
-                    System.in.read();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
             }
             ByteBuffer buffer = ByteBuffer.allocate(1024);
             Map<String, Object> info = new HashMap<>();
@@ -73,7 +68,7 @@ public class ChatServer {
                 channel.write(buffer, info, new ClientHandler(channel));
             } else {
                 buffer.clear();
-                buffer.flip();
+//                buffer.flip(); 有这句会一直打印System.out.println(buffer.toString());
                 info.put("type", "read");
                 channel.read(buffer, info, new ClientHandler(channel));
             }
