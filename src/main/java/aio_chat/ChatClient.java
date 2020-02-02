@@ -20,13 +20,10 @@ public class ChatClient {
         try {
             channel = AsynchronousSocketChannel.open();
             channel.connect(new InetSocketAddress(HOST, PORT), null, new ConnectHandler());
-            //如果不写下面的一行,server能接收到连接通知,并能打印有新的连接,但是client执行完上面一句.后面的没执行.
-            System.in.read();
-//            连接成功
-//            等待输入
-//            1(后直接退出)
-//
-//            Process finished with exit code 0
+
+            while (true) {
+
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -53,6 +50,7 @@ public class ChatClient {
                     System.out.println("等待输入");
                     String msg = in.readLine();
                     wbuffer.put(msg.getBytes());
+                    wbuffer.flip();
                     channel.write(wbuffer, winfo, new ClientHandler());
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -75,16 +73,16 @@ public class ChatClient {
             ByteBuffer buffer = (ByteBuffer) info.get("buffer");
             System.out.println(info.get("type"));
             if ("write".equals(info.get("type"))) {
-                System.out.println("已发送");
+                System.out.println("已发送" + buffer.toString());
+                buffer.clear();
             } else {
                 buffer.flip();
-                while (buffer.hasRemaining()) {
-                    System.out.println(buffer.toString());
-                }
+                System.out.println(new String(buffer.array()));
                 buffer.clear();
                 channel.read(buffer, info, new ClientHandler());
             }
         }
+
         @Override
         public void failed(Throwable exc, Object attachment) {
 
@@ -95,14 +93,5 @@ public class ChatClient {
         ChatClient chatClient = new ChatClient();
         chatClient.start();
     }
-    //如果debug运行,clinet打印下面,server显示新连接,但是没能收到消息
-//    连接成功
-//            等待输入
-//1
-//    等待输入
-//            write
-//    已发送
-//    Disconnected from the target VM, address: '127.0.0.1:55645', transport: 'socket'
-//
-//    Process finished with exit code 0
+
 }

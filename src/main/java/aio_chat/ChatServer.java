@@ -35,11 +35,6 @@ public class ChatServer {
             System.out.println("有新的连接");
             if (serverChannel.isOpen()) {
                 serverChannel.accept(null, new AcceptHandler());
-                try {
-                    System.in.read();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
             }
             ByteBuffer buffer = ByteBuffer.allocate(1024);
             Map<String, Object> info = new HashMap<>();
@@ -72,9 +67,8 @@ public class ChatServer {
                 info.put("type", "write");
                 channel.write(buffer, info, new ClientHandler(channel));
             } else {
-                buffer.clear();
-                buffer.flip();
                 info.put("type", "read");
+                buffer.clear();
                 channel.read(buffer, info, new ClientHandler(channel));
             }
         }
